@@ -1,6 +1,6 @@
 require 'singleton'
 require 'byebug'
-require_relative 'board.rb'
+# require_relative 'board.rb'
 
 DIRECTIONS = {
   horizontal: [[0, 1], [0, -1]],
@@ -32,7 +32,17 @@ module SteppingPiece
 end
 
 class Piece
-  attr_reader :color, :pos, :symbol
+  attr_reader :color, :symbol
+  attr_accessor :pos
+
+  def self.deep_dup(piece, board)
+    piece.class.new(piece.color, board, piece.pos)
+  end
+
+  # instance method ??
+  # def deep_dup(board)
+  #   self.class.new(self.color, board, self.pos)
+  # end
 
   def initialize(color, board, starting_pos)
     @color = color
@@ -52,6 +62,16 @@ class Piece
       moves.concat(add_move_dirs(direction))
     end
     moves
+  end
+
+  def valid_moves
+    debugger
+    moves.reject do |move|
+      board_copy = Board.deep_dup(@board)
+      debugger
+      board_copy.move_piece(pos, move)
+      board_copy.in_check?(color)
+    end
   end
 
   private
@@ -77,7 +97,11 @@ class NullPiece < Piece
   include Singleton
 
   def initialize
-    @symbol = "\u26F6"
+    # @symbol = " "
+  end
+
+  def symbol
+    " "
   end
 end
 
@@ -85,8 +109,10 @@ class Rook < Piece
   include SlidingPiece
 
   def initialize(*args)
-    @symbol = color == :white ? "\u2656" : "\u265C"
+    # debugger
     super
+    @symbol = @color == :white ? "\u2656" : "\u265C"
+    # debugger
   end
 
   def move_dirs
@@ -98,8 +124,8 @@ class Bishop < Piece
   include SlidingPiece
 
   def initialize(*args)
-    @symbol = color == :white ? "\u2657" : "\u265D"
     super
+    @symbol = @color == :white ? "\u2657" : "\u265D"
   end
 
   def move_dirs
@@ -111,8 +137,8 @@ class Knight < Piece
   include SteppingPiece
 
   def initialize(*args)
-    @symbol = color == :white ? "\u2658" : "\u265E"
     super
+    @symbol = @color == :white ? "\u2658" : "\u265E"
   end
 
   def move_dirs
@@ -124,8 +150,8 @@ class Queen < Piece
   include SlidingPiece
 
   def initialize(*args)
-    @symbol = color == :white ? "\u2655" : "\u265B"
     super
+    @symbol = @color == :white ? "\u2655" : "\u265B"
   end
 
   def move_dirs
@@ -137,8 +163,8 @@ class King < Piece
   include SteppingPiece
 
   def initialize(*args)
-    @symbol = color == :white ? "\u2654" : "\u265A"
     super
+    @symbol = @color == :white ? "\u2654" : "\u265A"
   end
 
   def move_dirs
@@ -148,8 +174,8 @@ end
 
 class Pawn < Piece
   def initialize(*args)
-    @symbol = color == :white ? "\u2659" : "\u265F"
     super
+    @symbol = @color == :white ? "\u2659" : "\u265F"
   end
 
   def at_start_row?; end

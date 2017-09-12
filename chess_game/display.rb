@@ -15,14 +15,14 @@ class Display
   def render
     system 'clear'
     nice_header
-    grid
+    nice_grid
   end
 
   def nice_header
     print '    ' + ('a'..'h').to_a.join('  ') + "\n"
   end
 
-  def grid
+  def nice_grid
     @board.grid.each_with_index do |row, idx|
       print "#{idx + 1}  "
       odd = idx.odd? ? false : true
@@ -44,10 +44,11 @@ class Display
 end
 
 def dummy_play
-  a = Display.new(Board.new)
+  a = Display.new(Board.populated)
+
   100.times do |_count|
     a.render
-    #  debugger
+    debugger
     begin
       a.cursor.get_input
     rescue OutOfBoundsError => e
@@ -55,6 +56,7 @@ def dummy_play
       retry
     end
   end
+
 end
 
 dummy_play
