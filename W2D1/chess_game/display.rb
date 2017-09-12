@@ -12,21 +12,35 @@ class Display
 
   def render
     system "clear"
-    p "  #{('a'..'h').to_a.join('  ')}"
-    @board.grid.each_with_index do |row, idx|
-      print "#{idx+1}  "
-      row.each_with_index do |piece, idx2|
-        if [idx, idx2] == @cursor.cursor_pos
-          print "#{piece.inspect}  ".red
-        else
-
-        print "#{piece.inspect}  "
-        end
-      end
-      puts ""
-    end
+    nice_header
+    board
   end
 
+end
+
+def nice_header
+  print "    " + ('a'..'h').to_a.reduce("") {|acc,c|acc + c + "  "} + "\n"
+end
+
+def board
+  # p "  #{('a'..'h').to_a.join('  ')} "
+  @board.grid.each_with_index do |row, idx|
+    print "#{idx+1}  "
+    odd = idx.odd? ? false : true
+    row.each_with_index do |piece, idx2|
+      if [idx, idx2] == @cursor.cursor_pos
+        print " #{piece.inspect} ".red.on_light_yellow.blink
+      else
+        if odd
+          print " #{piece.inspect} ".black.on_light_white
+        else
+          print " #{piece.inspect} ".light_white.on_black
+        end
+      end
+      odd=!odd
+    end
+    puts ""
+  end
 end
 
 def dummy_play
@@ -44,3 +58,5 @@ def dummy_play
   end
   end
 end
+
+dummy_play

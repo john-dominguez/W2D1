@@ -1,5 +1,7 @@
+require 'colorize'
+
 class OutOfBoundsError < StandardError
   def message
-    "Position out of bounds"
+    "\n << Position out of bounds >>".light_red
   end
 end
