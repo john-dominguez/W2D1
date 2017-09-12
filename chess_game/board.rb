@@ -1,18 +1,18 @@
 require_relative 'piece.rb'
+require_relative 'errors.rb'
 
 class Board
   attr_reader :grid
 
   def initialize
-    @grid = Array.new(8){Array.new(8){NullPiece.new}}
-
+    @grid = Array.new(8){Array.new(8){NullPiece.instance}}
   end
 
   def move_piece(start_pos, end_pos)
     piece1 = self[start_pos]
     raise NoPieceError if piece1.is_a?(NullPiece)
     loc = self[end_pos]
-    raise LocationError if !in_range?(end_pos)
+    raise OutOfBoundsError if !in_range?(end_pos)
     self[end_pos] = piece1
     self[start_pos] = loc
   end
